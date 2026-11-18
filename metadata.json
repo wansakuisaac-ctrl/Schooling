@@ -1,0 +1,6 @@
+{
+  "name": "ElimuCore CBC - Multi-Tenant Kenyan School SaaS",
+  "description": "Multi-tenant School Management System SaaS web app for Kenyan CBC schools (PP1–Grade 9) with 8-level rubric assessment, report cards, fees, timetable, staff, and DPA compliance.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,201 @@
+{
+  "entities": {
+    "School": {
+      "title": "School",
+      "description": "Multi-tenant Kenyan educational institution record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "slug": { "type": "string" },
+        "code": { "type": "string" },
+        "current_term": { "type": "string" },
+        "academic_year": { "type": "number" },
+        "address": { "type": "string" },
+        "phone": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "plan": { "type": "string" },
+        "status": { "type": "string" },
+        "created_at": { "type": "string" }
+      },
+      "required": ["id", "name", "slug", "email", "status"]
+    },
+    "User": {
+      "title": "User",
+      "description": "System user account with institutional role and school tenancy",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "school_id": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "full_name": { "type": "string" },
+        "role": { "type": "string" },
+        "phone": { "type": "string" },
+        "tsc_number": { "type": "string" },
+        "status": { "type": "string" },
+        "created_at": { "type": "string" }
+      },
+      "required": ["id", "school_id", "email", "full_name", "role", "status"]
+    },
+    "Student": {
+      "title": "Student",
+      "description": "Kenyan CBC learner profile with NEMIS UPI and assessment tracking",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "school_id": { "type": "string" },
+        "admission_number": { "type": "string" },
+        "full_name": { "type": "string" },
+        "gender": { "type": "string" },
+        "dob": { "type": "string" },
+        "class_id": { "type": "string" },
+        "level_id": { "type": "string" },
+        "student_type": { "type": "string" },
+        "upi": { "type": "string" },
+        "assessment_no": { "type": "string" },
+        "status": { "type": "string" },
+        "created_at": { "type": "string" }
+      },
+      "required": ["id", "school_id", "admission_number", "full_name", "class_id", "status"]
+    },
+    "SchoolClass": {
+      "title": "SchoolClass",
+      "description": "Stream or classroom allocation",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "school_id": { "type": "string" },
+        "name": { "type": "string" },
+        "level_id": { "type": "string" },
+        "capacity": { "type": "number" },
+        "class_teacher_id": { "type": "string" },
+        "academic_year": { "type": "number" },
+        "created_at": { "type": "string" }
+      },
+      "required": ["id", "school_id", "name", "level_id"]
+    },
+    "Subject": {
+      "title": "Subject",
+      "description": "KICD approved curriculum subject",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "school_id": { "type": "string" },
+        "level_id": { "type": "string" },
+        "code": { "type": "string" },
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "created_at": { "type": "string" }
+      },
+      "required": ["id", "school_id", "name", "code"]
+    },
+    "Exam": {
+      "title": "Exam",
+      "description": "Assessment session definition",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "school_id": { "type": "string" },
+        "name": { "type": "string" },
+        "term": { "type": "string" },
+        "year": { "type": "number" },
+        "type": { "type": "string" },
+        "is_published": { "type": "boolean" },
+        "created_at": { "type": "string" }
+      },
+      "required": ["id", "school_id", "name", "term", "year"]
+    },
+    "Grade": {
+      "title": "Grade",
+      "description": "Assessment score with 8-level CBC rubric evaluation",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "school_id": { "type": "string" },
+        "exam_id": { "type": "string" },
+        "student_id": { "type": "string" },
+        "subject_id": { "type": "string" },
+        "score": { "type": "number" },
+        "rubric_level": { "type": "string" },
+        "points": { "type": "number" },
+        "remarks": { "type": "string" },
+        "created_at": { "type": "string" }
+      },
+      "required": ["id", "school_id", "exam_id", "student_id", "subject_id", "rubric_level"]
+    },
+    "Invoice": {
+      "title": "Invoice",
+      "description": "Learner termly fee billing statement",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "school_id": { "type": "string" },
+        "student_id": { "type": "string" },
+        "term": { "type": "string" },
+        "year": { "type": "number" },
+        "total_amount": { "type": "number" },
+        "paid_amount": { "type": "number" },
+        "balance": { "type": "number" },
+        "status": { "type": "string" },
+        "created_at": { "type": "string" }
+      },
+      "required": ["id", "school_id", "student_id", "total_amount", "balance", "status"]
+    },
+    "Payment": {
+      "title": "Payment",
+      "description": "Fee receipt transaction, including M-Pesa STK push and bank deposits",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "school_id": { "type": "string" },
+        "invoice_id": { "type": "string" },
+        "student_id": { "type": "string" },
+        "amount": { "type": "number" },
+        "payment_method": { "type": "string" },
+        "reference": { "type": "string" },
+        "phone_number": { "type": "string" },
+        "status": { "type": "string" },
+        "created_at": { "type": "string" }
+      },
+      "required": ["id", "school_id", "student_id", "amount", "payment_method", "status"]
+    }
+  },
+  "firestore": {
+    "/schools/{schoolId}": {
+      "schema": "School",
+      "description": "School institutional records"
+    },
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profile accounts"
+    },
+    "/students/{studentId}": {
+      "schema": "Student",
+      "description": "Learner admission records"
+    },
+    "/classes/{classId}": {
+      "schema": "SchoolClass",
+      "description": "Classroom stream records"
+    },
+    "/subjects/{subjectId}": {
+      "schema": "Subject",
+      "description": "Subjects catalog"
+    },
+    "/exams/{examId}": {
+      "schema": "Exam",
+      "description": "Assessment sessions"
+    },
+    "/grades/{gradeId}": {
+      "schema": "Grade",
+      "description": "CBC assessment grades and rubric scores"
+    },
+    "/invoices/{invoiceId}": {
+      "schema": "Invoice",
+      "description": "Termly student fee invoices"
+    },
+    "/payments/{paymentId}": {
+      "schema": "Payment",
+      "description": "M-Pesa and fee payment receipts"
+    }
+  }
+}

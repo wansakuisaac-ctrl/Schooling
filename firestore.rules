@@ -1,0 +1,109 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 1. Global Catch-All Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Hardened Global Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isBootstrappedAdmin() {
+      return isSignedIn() && request.auth.token.email == 'wansakuisaac@gmail.com';
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSchoolAdmin(schoolId) {
+      return isSignedIn() && (
+        isBootstrappedAdmin() ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.school_id == schoolId &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['SCHOOL_ADMIN', 'PLATFORM_OWNER'])
+      );
+    }
+
+    function isSchoolMember(schoolId) {
+      return isSignedIn() && (
+        isBootstrappedAdmin() ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.school_id == schoolId)
+      );
+    }
+
+    // 2. Schools Collection
+    match /schools/{schoolId} {
+      allow read: if isSignedIn() && isValidId(schoolId);
+      allow create, update: if isSignedIn() && isValidId(schoolId) && isBootstrappedAdmin();
+      allow delete: if false;
+    }
+
+    // 3. Users Collection
+    match /users/{userId} {
+      allow get: if isSignedIn() && isValidId(userId) && (request.auth.uid == userId || isBootstrappedAdmin());
+      allow list: if isSignedIn() && (isBootstrappedAdmin() || resource.data.school_id == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.school_id);
+      allow create: if isSignedIn() && isValidId(userId) && (request.auth.uid == userId || isBootstrappedAdmin());
+      allow update: if isSignedIn() && isValidId(userId) && (request.auth.uid == userId || isBootstrappedAdmin());
+      allow delete: if false;
+    }
+
+    // 4. Students Collection
+    match /students/{studentId} {
+      allow read: if isSignedIn() && isValidId(studentId) && isSchoolMember(resource.data.school_id);
+      allow create, update: if isSignedIn() && isValidId(studentId) && isSchoolAdmin(incoming().school_id);
+      allow delete: if isSignedIn() && isValidId(studentId) && isSchoolAdmin(existing().school_id);
+    }
+
+    // 5. Classes Collection
+    match /classes/{classId} {
+      allow read: if isSignedIn() && isValidId(classId) && isSchoolMember(resource.data.school_id);
+      allow create, update, delete: if isSignedIn() && isValidId(classId) && isSchoolAdmin(incoming().school_id);
+    }
+
+    // 6. Subjects Collection
+    match /subjects/{subjectId} {
+      allow read: if isSignedIn() && isValidId(subjectId) && isSchoolMember(resource.data.school_id);
+      allow create, update, delete: if isSignedIn() && isValidId(subjectId) && isSchoolAdmin(incoming().school_id);
+    }
+
+    // 7. Exams Collection
+    match /exams/{examId} {
+      allow read: if isSignedIn() && isValidId(examId) && isSchoolMember(resource.data.school_id);
+      allow create, update, delete: if isSignedIn() && isValidId(examId) && isSchoolAdmin(incoming().school_id);
+    }
+
+    // 8. Grades & CBC Rubric Evaluations
+    match /grades/{gradeId} {
+      allow read: if isSignedIn() && isValidId(gradeId) && isSchoolMember(resource.data.school_id);
+      allow create, update: if isSignedIn() && isValidId(gradeId) && isSchoolMember(incoming().school_id);
+      allow delete: if isSignedIn() && isValidId(gradeId) && isSchoolAdmin(existing().school_id);
+    }
+
+    // 9. Invoices Collection
+    match /invoices/{invoiceId} {
+      allow read: if isSignedIn() && isValidId(invoiceId) && isSchoolMember(resource.data.school_id);
+      allow create, update, delete: if isSignedIn() && isValidId(invoiceId) && isSchoolAdmin(incoming().school_id);
+    }
+
+    // 10. Payments Collection
+    match /payments/{paymentId} {
+      allow read: if isSignedIn() && isValidId(paymentId) && isSchoolMember(resource.data.school_id);
+      allow create: if isSignedIn() && isValidId(paymentId) && isSchoolMember(incoming().school_id);
+      allow update, delete: if isSignedIn() && isValidId(paymentId) && isSchoolAdmin(existing().school_id);
+    }
+  }
+}

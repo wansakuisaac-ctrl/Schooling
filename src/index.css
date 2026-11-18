@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+/* --------------------------------------------------------------------------
+   KENYAN CBC MANAGEMENT SYSTEM - PRINT STYLESHEET
+   Professional formatting for Report Cards, Broadsheets, Invoices & Payslips
+   -------------------------------------------------------------------------- */
+
+@media print {
+  /* Hide non-printable app shell elements */
+  nav,
+  aside,
+  header,
+  .no-print,
+  button,
+  input[type="button"],
+  input[type="submit"],
+  .fixed,
+  [data-no-print] {
+    display: none !important;
+  }
+
+  /* Reset layout constraints for paper */
+  html,
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    font-size: 11pt !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Container resets */
+  main,
+  #root,
+  .printable-document {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+    box-shadow: none !important;
+    border: none !important;
+    width: 100% !important;
+  }
+
+  /* Page break rules */
+  .page-break-before {
+    page-break-before: always !important;
+    break-before: page !important;
+  }
+
+  .page-break-after {
+    page-break-after: always !important;
+    break-after: page !important;
+  }
+
+  .page-break-inside-avoid,
+  .printable-card,
+  tr,
+  figure {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Tables in print */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    page-break-inside: auto !important;
+    font-size: 9.5pt !important;
+  }
+
+  thead {
+    display: table-header-group !important;
+  }
+
+  th,
+  td {
+    border: 1px solid #94a3b8 !important;
+    padding: 4px 6px !important;
+    color: #0f172a !important;
+  }
+
+  /* Badges & Pills in print */
+  .rubric-badge-print {
+    border: 1px solid #475569 !important;
+    background-color: #f1f5f9 !important;
+    color: #0f172a !important;
+    font-weight: bold !important;
+    padding: 1px 4px !important;
+  }
+
+  /* Typography enhancement for paper */
+  h1, h2, h3, h4 {
+    color: #000000 !important;
+  }
+
+  a[href]:after {
+    content: "" !important;
+  }
+}
+
+/* Page orientations */
+@page {
+  margin: 12mm 10mm 12mm 10mm;
+}
+
+@page broadsheet-landscape {
+  size: A4 landscape;
+  margin: 8mm;
+}
+
+.print-landscape {
+  page: broadsheet-landscape;
+}
